@@ -1,0 +1,123 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Two Sum',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Two Sum'),
+        ),
+        body: TwoSumScreen(),
+      ),
+    );
+  }
+}
+
+class TwoSumScreen extends StatefulWidget {
+  @override
+  _TwoSumScreenState createState() => _TwoSumScreenState();
+}
+
+class _TwoSumScreenState extends State<TwoSumScreen> {
+  TextEditingController _numsController = TextEditingController();
+  TextEditingController _targetController = TextEditingController();
+  String _result = '';
+
+  void _calculateTwoSum() {
+    // Lấy dữ liệu từ TextField và parse thành mảng số và target
+    String numsInput = _numsController.text;
+    int target = int.tryParse(_targetController.text) ?? 0;
+
+    List<int> nums = _parseInput(numsInput);
+
+    // Tìm chỉ số của hai số thỏa mãn điều kiện
+    List<int> indices = _findTwoSumIndices(nums, target);
+
+    // Hiển thị kết quả
+    setState(() {
+      if (indices.isNotEmpty) {
+        _result = 'Indices: ${indices[0]} và ${indices[1]}';
+      } else {
+        _result = 'Không tìm thấy cặp số thỏa mãn';
+      }
+    });
+  }
+
+  List<int> _parseInput(String input) {
+    List<String> parts = input.split(',');
+    List<int> nums = [];
+    for (String part in parts) {
+      nums.add(int.tryParse(part.trim()) ?? 0);
+    }
+    return nums;
+  }
+
+  List<int> _findTwoSumIndices(List<int> nums, int target) {
+    List<int> indices = [];
+
+    for (int i = 0; i < nums.length; i++) {
+      for (int j = i + 1; j < nums.length; j++) {
+        if (nums[i] + nums[j] == target) {
+          indices = [i, j];
+          break;
+        }
+      }
+      if (indices.isNotEmpty) {
+        break;
+      }
+    }
+
+    return indices;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          TextField(
+            controller: _numsController,
+            decoration: InputDecoration(
+              labelText: 'Nhập mảng các số, phân tách bởi dấu phẩy',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          TextField(
+            controller: _targetController,
+            decoration: InputDecoration(
+              labelText: 'Nhập giá trị target',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+          SizedBox(height: 16.0),
+          ElevatedButton(
+            onPressed: _calculateTwoSum,
+            child: Text('Tìm cặp số'),
+          ),
+          SizedBox(height: 16.0),
+          Text(
+            _result,
+            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _numsController.dispose();
+    _targetController.dispose();
+    super.dispose();
+  }
+}
